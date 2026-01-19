@@ -1,17 +1,35 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { downloadCode, copyToClipboard, getFileExtension } from '../utils/fileUtils';
 import './TranslatedOutput.css';
 
 /**
- * Component displaying translated code with tabs for different languages
+ * Component displaying translated code with tabs for different target languages
+ * Dynamically shows available target languages based on source language
  */
-export function TranslatedOutput({ javaCode, cCode }) {
-  const [activeTab, setActiveTab] = useState('java');
+export function TranslatedOutput({ sourceLanguage, translations }) {
+  // Determine available target languages (all except source)
+  const allLanguages = ['python', 'java', 'c'];
+  const targetLanguages = allLanguages.filter(lang => lang !== sourceLanguage.toLowerCase());
+
+  const [activeTab, setActiveTab] = useState(targetLanguages[0] || 'java');
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const currentCode = activeTab === 'java' ? javaCode : cCode;
-  const hasCode = javaCode || cCode;
+  // Update active tab when source language changes
+  useEffect(() => {
+    if (!targetLanguages.includes(activeTab)) {
+      setActiveTab(targetLanguages[0] || 'java');
+    }
+  }, [sourceLanguage]);
+
+  const currentCode = translations[activeTab] || '';
+  const hasCode = Object.values(translations).some(code => code);
+
+  const languageLabels = {
+    python: 'Python',
+    java: 'Java',
+    c: 'C'
+  };
 
   const handleDownload = () => {
     const extension = getFileExtension(activeTab);
@@ -31,18 +49,15 @@ export function TranslatedOutput({ javaCode, cCode }) {
       <div className="output-header">
         <h2>Translated Code</h2>
         <div className="tabs">
-          <button
-            className={`tab ${activeTab === 'java' ? 'active' : ''}`}
-            onClick={() => setActiveTab('java')}
-          >
-            Java
-          </button>
-          <button
-            className={`tab ${activeTab === 'c' ? 'active' : ''}`}
-            onClick={() => setActiveTab('c')}
-          >
-            C
-          </button>
+          {targetLanguages.map(lang => (
+            <button
+              key={lang}
+              className={`tab ${activeTab === lang ? 'active' : ''}`}
+              onClick={() => setActiveTab(lang)}
+            >
+              {languageLabels[lang]}
+            </button>
+          ))}
         </div>
       </div>
 

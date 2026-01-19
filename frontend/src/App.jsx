@@ -7,39 +7,50 @@ import { EXAMPLES } from './constants/examples';
 import './App.css';
 
 /**
- * Main application component for the Python Language Interpreter
- * Provides a UI for translating Python code to Java and C
+ * Main application component for the Multi-Language Interpreter
+ * Provides a UI for translating between Python, Java, and C
  */
 function App() {
   const [selectedExample, setSelectedExample] = useState(0);
   const [autoTranslate, setAutoTranslate] = useState(false);
 
   const {
-    pythonCode,
-    setPythonCode,
-    javaCode,
-    cCode,
+    sourceCode,
+    setSourceCode,
+    sourceLanguage,
+    setSourceLanguage,
+    translations,
     isTranslating,
     error,
     translate,
     reset
-  } = useTranslator(EXAMPLES[0].code, autoTranslate);
+  } = useTranslator(EXAMPLES[0].code, 'python', autoTranslate);
+
+  const languageLabels = {
+    python: 'Python',
+    java: 'Java',
+    c: 'C'
+  };
 
   const handleExampleSelect = (index) => {
     setSelectedExample(index);
-    setPythonCode(EXAMPLES[index].code);
+    setSourceCode(EXAMPLES[index].code);
     reset();
   };
 
   const handleCodeChange = (value) => {
-    setPythonCode(value || '');
+    setSourceCode(value || '');
+  };
+
+  const handleLanguageChange = (newLanguage) => {
+    setSourceLanguage(newLanguage);
   };
 
   return (
     <div className="app">
       <header className="header">
-        <h1>Python Language Interpreter</h1>
-        <p>Translate Python to Java and C instantly</p>
+        <h1>Multi-Language Code Translator</h1>
+        <p>Translate between Python, Java, and C instantly</p>
       </header>
 
       <div className="container">
@@ -53,14 +64,27 @@ function App() {
         <div className="main-content">
           <div className="editor-section">
             <div className="section-header">
-              <h2>Python Code</h2>
+              <h2>Source Code</h2>
+              <div className="language-selector">
+                <label>Language:</label>
+                <select
+                  value={sourceLanguage}
+                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  className="language-dropdown"
+                >
+                  <option value="python">Python</option>
+                  <option value="java">Java</option>
+                  <option value="c">C</option>
+                </select>
+              </div>
             </div>
             <div className="editor-container">
               <Editor
                 height="500px"
-                defaultLanguage="python"
+                defaultLanguage={sourceLanguage}
+                language={sourceLanguage}
                 theme="vs-dark"
-                value={pythonCode}
+                value={sourceCode}
                 onChange={handleCodeChange}
                 options={{
                   minimap: { enabled: false },
@@ -84,13 +108,16 @@ function App() {
           </div>
 
           <div className="output-section">
-            <TranslatedOutput javaCode={javaCode} cCode={cCode} />
+            <TranslatedOutput
+              sourceLanguage={sourceLanguage}
+              translations={translations}
+            />
           </div>
         </div>
       </div>
 
       <footer className="footer">
-        <p>Built with React, Node.js, and Monaco Editor</p>
+        <p>Built with React, Node.js, and Monaco Editor • Supports Python, Java, and C</p>
       </footer>
     </div>
   );
