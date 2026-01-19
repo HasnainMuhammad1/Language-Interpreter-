@@ -2,30 +2,35 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 /**
- * Custom hook to handle Python code translation to Java and C
+ * Custom hook to handle multi-language code translation
+ * Supports Python, Java, and C with translation between all combinations
  * Manages translation state, API calls, and auto-translate functionality
  */
-export function useTranslator(initialCode = '', autoTranslate = false) {
-  const [pythonCode, setPythonCode] = useState(initialCode);
-  const [javaCode, setJavaCode] = useState('');
-  const [cCode, setCCode] = useState('');
+export function useTranslator(initialCode = '', initialLanguage = 'python', autoTranslate = false) {
+  const [sourceCode, setSourceCode] = useState(initialCode);
+  const [sourceLanguage, setSourceLanguage] = useState(initialLanguage);
+  const [translations, setTranslations] = useState({
+    python: '',
+    java: '',
+    c: ''
+  });
   const [isTranslating, setIsTranslating] = useState(false);
   const [error, setError] = useState('');
 
   // Auto-translate effect
   useEffect(() => {
-    if (!autoTranslate || !pythonCode) return;
+    if (!autoTranslate || !sourceCode.trim()) return;
 
     const timer = setTimeout(() => {
       translate();
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [pythonCode, autoTranslate]);
+  }, [sourceCode, sourceLanguage, autoTranslate]);
 
   const translate = async () => {
-    if (!pythonCode.trim()) {
-      setError('Please enter some Python code');
+    if (!sourceCode.trim()) {
+      setError('Please enter some code');
       return;
     }
 
@@ -33,13 +38,18 @@ export function useTranslator(initialCode = '', autoTranslate = false) {
     setError('');
 
     try {
-      const response = await axios.post('/api/translate/all', {
-        code: pythonCode
+      // Determine target languages (all except source)
+      const allLanguages = ['python', 'java', 'c'];
+      const targetLanguages = allLanguages.filter(lang => lang !== sourceLanguage.toLowerCase());
+
+      const response = await axios.post('/api/translate', {
+        code: sourceCode,
+        sourceLanguage,
+        targetLanguages
       });
 
       if (response.data.success) {
-        setJavaCode(response.data.translations.java);
-        setCCode(response.data.translations.c);
+        setTranslations(response.data.translations);
       } else {
         setError(response.data.error || 'Translation failed');
       }
@@ -55,16 +65,25 @@ export function useTranslator(initialCode = '', autoTranslate = false) {
   };
 
   const reset = () => {
-    setJavaCode('');
-    setCCode('');
+    setTranslations({
+      python: '',
+      java: '',
+      c: ''
+    });
     setError('');
   };
 
+  const changeSourceLanguage = (newLanguage) => {
+    setSourceLanguage(newLanguage);
+    reset();
+  };
+
   return {
-    pythonCode,
-    setPythonCode,
-    javaCode,
-    cCode,
+    sourceCode,
+    setSourceCode,
+    sourceLanguage,
+    setSourceLanguage: changeSourceLanguage,
+    translations,
     isTranslating,
     error,
     translate,
