@@ -3,6 +3,8 @@ import Editor from '@monaco-editor/react';
 import { useTranslator } from './hooks/useTranslator';
 import { ExamplesSidebar } from './components/ExamplesSidebar';
 import { TranslatedOutput } from './components/TranslatedOutput';
+import { ValidationPanel } from './components/ValidationPanel';
+import { ExecutionPanel } from './components/ExecutionPanel';
 import { getExamplesByLanguage, PYTHON_EXAMPLES } from './constants/examples';
 import './App.css';
 
@@ -110,6 +112,9 @@ function App() {
               </button>
             </div>
             {error && <div className="error-message">{error}</div>}
+
+            <ValidationPanel code={sourceCode} language={sourceLanguage} />
+            <ExecutionPanel code={sourceCode} language={sourceLanguage} />
           </div>
 
           <div className="output-section">
