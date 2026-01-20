@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
 import { useTranslator } from './hooks/useTranslator';
 import { ExamplesSidebar } from './components/ExamplesSidebar';
 import { TranslatedOutput } from './components/TranslatedOutput';
-import { EXAMPLES } from './constants/examples';
+import { getExamplesByLanguage, PYTHON_EXAMPLES } from './constants/examples';
 import './App.css';
 
 /**
@@ -24,17 +24,20 @@ function App() {
     error,
     translate,
     reset
-  } = useTranslator(EXAMPLES[0].code, 'python', autoTranslate);
+  } = useTranslator(PYTHON_EXAMPLES[0].code, 'python', autoTranslate);
 
-  const languageLabels = {
-    python: 'Python',
-    java: 'Java',
-    c: 'C'
-  };
+  // Get examples for current source language
+  const currentExamples = getExamplesByLanguage(sourceLanguage);
+
+  // Reset example selection when language changes
+  useEffect(() => {
+    setSelectedExample(0);
+    setSourceCode(currentExamples[0].code);
+  }, [sourceLanguage]);
 
   const handleExampleSelect = (index) => {
     setSelectedExample(index);
-    setSourceCode(EXAMPLES[index].code);
+    setSourceCode(currentExamples[index].code);
     reset();
   };
 
@@ -55,10 +58,12 @@ function App() {
 
       <div className="container">
         <ExamplesSidebar
+          examples={currentExamples}
           selectedExample={selectedExample}
           onSelectExample={handleExampleSelect}
           autoTranslate={autoTranslate}
           onAutoTranslateChange={setAutoTranslate}
+          sourceLanguage={sourceLanguage}
         />
 
         <div className="main-content">
