@@ -17,6 +17,8 @@ const { Validator } = require('./core/validator');
 const { Executor } = require('./core/executor');
 const { TypeSystem } = require('./core/typeSystem');
 const { StandardLibrary } = require('./core/standardLibrary');
+const { MemoryManager } = require('./core/memoryManager');
+const { TestSuite } = require('./tests/testSuite');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -364,6 +366,32 @@ app.post('/api/translate/all', async (req, res) => {
     res.status(500).json({
       success: false,
       error: error.message || 'Translation failed'
+    });
+  }
+});
+
+// Run test suite endpoint
+app.post('/api/run-tests', async (req, res) => {
+  try {
+    const suite = new TestSuite();
+    suite.loadStandardTests();
+
+    const results = await suite.runAll();
+
+    res.json({
+      success: results.failed === 0,
+      total: suite.tests.length,
+      passed: results.passed,
+      failed: results.failed,
+      successRate: ((results.passed / suite.tests.length) * 100).toFixed(1),
+      details: results.details,
+      errors: results.errors
+    });
+  } catch (error) {
+    console.error('Test suite error:', error);
+    res.status(500).json({
+      success: false,
+      error: error.message || 'Test suite failed'
     });
   }
 });
