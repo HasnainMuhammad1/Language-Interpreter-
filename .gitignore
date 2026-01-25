@@ -1,3 +1,8 @@
+# ===========================================
+# PUBLIC REPO: Never commit secrets or keys.
+# Keep .env, tokens, API keys, passwords local.
+# ===========================================
+
 # Dependencies
 node_modules/
 package-lock.json
@@ -8,10 +13,13 @@ dist/
 build/
 *.log
 
-# Environment
+# Environment (secrets, API keys, tokens)
 .env
 .env.local
 .env.*.local
+.env.development
+.env.production
+*.pem
 
 # Editor
 .vscode/

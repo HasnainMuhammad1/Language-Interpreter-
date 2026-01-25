@@ -390,6 +390,6 @@ To add new language features:
 ## Support
 
 For issues or questions:
-- GitHub Issues: [Repository URL]
+- GitHub Issues: https://github.com/HasnainMuhammad1/Language-Interpreter-
 - Documentation: This file
 - Examples: See `frontend/src/constants/examples.js`
