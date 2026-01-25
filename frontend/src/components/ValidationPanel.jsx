@@ -6,13 +6,13 @@ import './ValidationPanel.css';
  * Validation Panel Component
  * Shows validation errors and warnings before translation
  */
-export function ValidationPanel({ sourceCode, sourceLanguage }) {
+export function ValidationPanel({ code, language }) {
   const [isValidating, setIsValidating] = useState(false);
   const [validation, setValidation] = useState(null);
   const [showPanel, setShowPanel] = useState(false);
 
   const handleValidate = async () => {
-    if (!sourceCode.trim()) {
+    if (!code || !code.trim()) {
       return;
     }
 
@@ -21,8 +21,8 @@ export function ValidationPanel({ sourceCode, sourceLanguage }) {
 
     try {
       const response = await axios.post('/api/validate', {
-        code: sourceCode,
-        language: sourceLanguage
+        code: code,
+        language: language
       });
 
       setValidation(response.data);
@@ -54,7 +54,7 @@ export function ValidationPanel({ sourceCode, sourceLanguage }) {
       <button
         className="btn btn-validate"
         onClick={handleValidate}
-        disabled={isValidating || !sourceCode.trim()}
+        disabled={isValidating || !code || !code.trim()}
       >
         {isValidating ? 'Validating...' : '🔍 Validate Code'}
       </button>

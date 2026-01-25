@@ -12,7 +12,7 @@ export function ExecutionPanel({ code, language }) {
   const [showPanel, setShowPanel] = useState(false);
 
   const handleExecute = async () => {
-    if (!code.trim()) {
+    if (!code || !code.trim()) {
       return;
     }
 
@@ -44,7 +44,7 @@ export function ExecutionPanel({ code, language }) {
       <button
         className="btn btn-execute"
         onClick={handleExecute}
-        disabled={isExecuting || !code.trim()}
+        disabled={isExecuting || !code || !code.trim()}
       >
         {isExecuting ? '⚙️ Running...' : '▶️ Run Code'}
       </button>
