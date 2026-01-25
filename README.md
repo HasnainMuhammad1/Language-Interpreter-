@@ -147,20 +147,6 @@ The application includes several built-in examples:
 - Code optimization suggestions
 - Export to multiple files for complex programs
 
-## Publishing this repo (branch setup)
-
-The default branch is **`main`**. To publish and remove the old `claude/...` branch:
-
-```bash
-# Push the new main branch
-git push -u origin main
-
-# Delete the old branch on GitHub (optional)
-git push origin --delete claude/refactor-complex-mklrf6eepj4evwf2-Yp4zy
-```
-
-In GitHub: **Settings → General → Default branch** → set `main`, then delete the old branch if needed.
-
 ## Security (public repo)
 
 - **No secrets in code**: The app uses no API keys or external services. Backend is self-contained (parsers, translators, local execution).

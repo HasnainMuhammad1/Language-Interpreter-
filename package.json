@@ -11,7 +11,7 @@
     "start": "cd backend && npm start"
   },
   "keywords": ["python", "java", "c", "translator", "interpreter"],
-  "author": "",
+  "author": "Hasnain <cazopyba-hm17@outlook.com>",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"

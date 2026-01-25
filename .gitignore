@@ -21,9 +21,10 @@ build/
 .env.production
 *.pem
 
-# Editor
+# Editor / IDE
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 *~
